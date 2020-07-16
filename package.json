@@ -1,0 +1,26 @@
+{
+  "name": "auto_selfchk",
+  "version": "1.0.0",
+  "description": "코로나19 자가진단을 자동으로 해주는 프로그램입니다.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Heavyrisem/Auto_selftest.git"
+  },
+  "keywords": [
+    "selfCheck",
+    "자가진단"
+  ],
+  "author": "Heavyrisem",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Heavyrisem/Auto_selftest/issues"
+  },
+  "homepage": "https://github.com/Heavyrisem/Auto_selftest#readme",
+  "dependencies": {
+    "request": "^2.88.2"
+  }
+}
