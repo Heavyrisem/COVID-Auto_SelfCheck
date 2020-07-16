@@ -1,7 +1,7 @@
 {
   "name": "auto_selfchk",
   "version": "1.0.0",
-  "description": "코로나19 자가진단을 자동으로 해주는 프로그램입니다.",
+  "description": "",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
