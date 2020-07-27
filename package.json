@@ -1,7 +1,7 @@
 {
   "name": "covid_selfcheck",
-  "version": "1.0.3",
-  "description": "https://github.com/Heavyrisem/Auto_selftest",
+  "version": "1.0.4",
+  "description": "https//github.com/Heavyrisem/Auto_selftest",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
