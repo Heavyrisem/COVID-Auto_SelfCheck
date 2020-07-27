@@ -4,7 +4,7 @@
 ## 사용법
 
 ```
-const SelfTest = require('./main');
+const SelfTest = require('covid_selfcheck');
 
 SelfTest('학교이름', '학생이름', '생년월일').then(result => {
     console.log(result); // 결과값
