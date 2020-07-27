@@ -1,7 +1,7 @@
 # Auto_Selftest
 코로나19 자가진단을 이상없음으로 처리해주는 코드입니다.
 
-##사용법
+## 사용법
 
 ```
 const SelfTest = require('./main');
