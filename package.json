@@ -1,7 +1,7 @@
 {
   "name": "covid_selfcheck",
   "version": "1.0.0",
-  "description": "코로나19 자가진단을 이상없음으로 처리해주는 코드입니다.",
+  "description": "사용법은 깃허브에 있습니다.  https://github.com/Heavyrisem/Auto_selftest",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,8 +11,9 @@
     "url": "git+https://github.com/Heavyrisem/Auto_selftest.git"
   },
   "keywords": [
-    "selfCheck",
-    "자가진단"
+    "SelfCheck",
+    "자가진단",
+    "COVID"
   ],
   "author": "Heavyrisem",
   "license": "MIT",
