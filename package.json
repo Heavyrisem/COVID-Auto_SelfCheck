@@ -1,7 +1,7 @@
 {
-  "name": "auto_selfchk",
+  "name": "covid_selfcheck",
   "version": "1.0.0",
-  "description": "",
+  "description": "코로나19 자가진단을 이상없음으로 처리해주는 코드입니다.",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,12 +15,13 @@
     "자가진단"
   ],
   "author": "Heavyrisem",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Heavyrisem/Auto_selftest/issues"
   },
   "homepage": "https://github.com/Heavyrisem/Auto_selftest#readme",
   "dependencies": {
     "request": "^2.88.2"
-  }
+  },
+  "devDependencies": {}
 }
