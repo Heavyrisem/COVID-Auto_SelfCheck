@@ -1,6 +1,6 @@
 {
   "name": "covid_selfcheck",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "https//github.com/Heavyrisem/Auto_selftest",
   "main": "main.js",
   "scripts": {
