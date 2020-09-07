@@ -1,128 +1,126 @@
 const request = require('request');
-const kostudycenter = require('kostudycenter');
+const dataset = require('./dataset.js');
+const JSencrypt = require('node-jsencrypt');
+const crypto =  new JSencrypt();
+
+crypto.setPublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA81dCnCKt0NVH7j5Oh2+SGgEU0aqi5u6sYXemouJWXOlZO3jqDsHYM1qfEjVvCOmeoMNFXYSXdNhflU7mjWP8jWUmkYIQ8o3FGqMzsMTNxr+bAp0cULWu9eYmycjJwWIxxB7vUwvpEUNicgW7v5nCwmF5HS33Hmn7yDzcfjfBs99K5xJEppHG0qc+q3YXxxPpwZNIRFn0Wtxt0Muh1U8avvWyw03uQ/wMBnzhwUC8T4G5NclLEWzOQExbQ4oDlZBv8BM/WxxuOyu0I8bDUDdutJOfREYRZBlazFHvRKNNQQD2qDfjRz484uFs7b5nykjaMB9k/EJAuHjJzGs9MMMWtQIDAQAB");
+
+async function schoolInfo(name, level, region) {
+
+    return new Promise(async (resolve, reject) => {
+        if (name.length < 2) {return resolve({err: "INPUT_VALUE_LENGTH"})}
+        const schoolcode = await dataset.schoolid(region);
+        const schoollevel = await dataset.schoollevel(level);
+        
+        switch(schoolcode) {
+            case "REGION_NOT_FOUND":
+                return resolve({err: "REGION_NOT_FOUND"}); break;
+        }
+        switch(schoollevel) {
+            case "SCHOOL_LEVEL_NOT_FOUND":
+                return resolve({err: "SCHOOL_LEVEL_NOT_FOUND"}); break;
+        }
 
 
-async function getSculNm(school) {
-
-    return new Promise(function(resolve, reject) {
         let info = {
-            uri: `https://${school.studyCenter}/stv_cvd_co00_004.do`,
-            qs: { schulNm : school.name }
+            uri: "https://cbehcs.eduro.go.kr/school",
+            qs: {
+                lctnScCode: schoolcode,
+                schulCrseScCode: schoollevel,
+                orgName : name,
+                currentPageNo: '1'
+            }
         };
-    
-        request.post(info, (err, response, body) => {
+        
+        request.get(info, (err, response, body) => {
             
-            if (err) {console.log(err);resolve(0);}
-            let data = JSON.parse(body).resultSVO.data;
+            if (err) {resolve({err: err});return;}
+            if (typeof body == "string") {return resolve({err: "UNKNOWN_ERROR"})}
+            
+            let data = JSON.parse(body);
     
-            if (data.schulCode == '') {
-                // console.log(`${data.schulNm}의 검색 결과가 없습니다. 정확한 이름을 입력해 주세요.`);
-                resolve(0);
+            if (data.schulList.length == 0) {
+                return resolve({err: "SCHOOL_NOT_FOUND"});
             } else {
-                // console.log(`${data.schulNm}를 찾았습니다.`);
-                school = {
-                    code: data.schulCode,
-                    name: data.schulNm,
-                    studyCenter: school.studyCenter
+                const school = {
+                    code: data.schulList[0].orgCode,
+                    name: data.schulList[0].kraOrgNm,
+                    engname: data.schulList[0].engOrgNm
                 };
 
-                resolve(school);
+                return resolve(school);
             }
         });
     });
 
 }
 
-module.exports = async function Self_test(schoolname, username, birth, studyCenter, agree) {
-    return new Promise(resolve => {
+async function usertoken(name, birth, region, schoolname, schoollevel) {
+    return new Promise(async (resolve, reject) => {
 
-        if (!agree) return resolve("AGREE_FOR_USAGE");
-
-        let userinfo = {
-            school: { name: schoolname, code: undefined, studyCenter: undefined },
-            name: username,
-            birth: birth
+        const schoolinfo = await schoolInfo(schoolname, schoollevel, region);
+        if(schoolinfo.err) {return resolve({err: school.err})}
+        
+        let info = {
+            uri: "https://goehcs.eduro.go.kr/loginwithschool",
+            json: {
+                birthday: crypto.encrypt(birth),
+                name: crypto.encrypt(name),
+                orgcode: schoolinfo.code
+            }
         };
-        kostudycenter(studyCenter).then(result => {
-            if (result == "STUDY_CENTER_NOT_FOUND") return resolve(result);
 
+        request.post(info, (err, response, body) => {
+            if (err) return resolve({err: err});
 
-            userinfo.school.studyCenter = result.URL;
-
-            getSculNm(userinfo.school).then((schul) => {
-                if (schul == 0)
-                    return resolve('SCHUL_NOT_FOUND');
-        
-                userinfo.school = schul;
-                
-        
-                
-                let reqData = {
-                    uri: `https://${userinfo.school.studyCenter}/stv_cvd_co00_012.do`,
-                    qs: {
-                        qstnCrtfcNoEncpt: '',
-                        rtnRsltCode: '',
-                        schulCode: userinfo.school.code,
-                        schulNm: userinfo.school.name,
-                        pName: userinfo.name,
-                        frnoRidno: userinfo.birth,
-                        aditCrtfcNo: ''
-                    }        
-                };
-                
-                
-                request.post(reqData, (err, response, body) => {
-                    if (err)
-                        return resolve(console.log(err));
-                    let data = JSON.parse(body).resultSVO.data;
-        
-                    if (data.rtnRsltCode == "SUCCESS") {
-                        let checkData = {
-                            uri: `https://${userinfo.school.studyCenter}/stv_cvd_co01_000.do`,
-                            qs: {
-                                rtnRsltCode: data.rtnRsltCode,
-                                qstnCrtfcNoEncpt: data.qstnCrtfcNoEncpt,
-                                schulNm: '',
-                                stdntName: '',
-                                rspns01: 1,
-                                rspns02: 1,
-                                rspns07: 0,
-                                rspns08: 0,
-                                rspns09: 0
-                            }
-                        }
-        
-                        request.post(checkData, (err, response, body) => {
-                            if (err)
-                                return resolve(console.log(err));
-                            let data = JSON.parse(body).resultSVO.data;
-        
-                            if (data.rtnRsltCode == "SUCCESS")
-                                return resolve('SUCCESS');
-                                // resolve(console.log(`${data.schulNm} ${data.stdntName} 학생의 자가진단을 완료했습니다.`));
-                            else 
-                                return resolve('WRONG_USER_INFO');
-                                // resolve(console.log(`잘못된 본인확인 정보입니다. (${data.rtnRsltCode})\n\r참여주소 또는 본인확인 정보를 확인바랍니다.\n\r확인 후 다시 시도해 주시기 바랍니다.`));
-                        })
-                        
-                    } else {
-                        switch (data.rtnRsltCode) {
-                            case "ADIT_CRTFC_NO":
-                                return resolve('ADIT_CRTFC_NO'); break
-                                // console.log('동일한 이름을 가진 학생이 있어, 웹 페이지에서 진행해 주시길 바랍니다.'); break;
-                            case "QSTN_USR_ERROR":
-                                return resolve('QSTN_USR_ERROR'); break;
-                                // console.log('잘못된 본인확인 정보(학교,성명,생년월일)를 입력하였습니다.\n\r확인 후 다시 시도해 주시기 바랍니다.'); break;                        
-                            case "SCHOR_RFLT_YMD_ERROR":
-                                return resolve('SCHOR_RFLT_YMD_ERROR'); break;
-                                // console.log('학생 건강상태 자가진단 참여가능기간을 확인바랍니다.\n\r확인 후 다시 시도해 주시기 바랍니다.'); break;                        
-                            default:
-                                return resolve('WRONG_USER_INFO'); break;
-                                // console.log(`잘못된 본인확인 정보입니다.(${data.rtnRsltCode})\n\r확인 후 다시 시도해 주시기 바랍니다.`); break;
-                        }
-                    }
-                });
-            });
+            if (body.isError) return resolve({err: body.message});
+            if (typeof body == "string") return resolve({err: "503_SERVER_ERROR"});
+            
+            return resolve(body.token);
         });
+
+    });
+}
+
+module.exports = async function autocheck(name, birth, region, schoolname, schoollevel) {
+    return new Promise(async (resolve, reject) => {
+
+        const Token = await usertoken(name, birth, region, schoolname, schoollevel);
+        if (Token.err) {return resolve(Token.err);}
+
+        const info = {
+            uri: "https://goehcs.eduro.go.kr/registerServey",
+            headers: {
+                Authorization: Token
+            },
+            json: {
+                eviceUuid: "",
+                rspns00: "Y",
+                rspns01: "1",
+                rspns02: "1",
+                rspns03: null, 
+                rspns04: null,
+                rspns05: null,
+                rspns06: null,
+                rspns07: "0",
+                rspns08: "0",
+                rspns09: "0",
+                rspns10: null,
+                rspns11: null,
+                rspns12: null,
+                rspns13: null,
+                rspns14: null,
+                rspns15: null
+            }
+        }
+
+        request.post(info, (err, response, body) => {
+            if (err) return resolve({err: err});
+
+            if (body.message) return resolve({err: message});
+
+            return resolve(body);
+        });
+
     });
 }

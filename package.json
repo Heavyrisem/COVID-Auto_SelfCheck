@@ -1,6 +1,6 @@
 {
-  "name": "covid_selfcheck",
-  "version": "1.1.1",
+  "name": "@Auto_selfcheck/covid_selfcheck",
+  "version": "1.1.2",
   "description": "https//github.com/Heavyrisem/Auto_selftest",
   "main": "main.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Heavyrisem/Auto_selftest.git"
+    "url": "git+https://github.com/Heavyrisem/Auto_selftest"
   },
   "keywords": [
     "SelfCheck",
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/Heavyrisem/Auto_selftest#readme",
   "dependencies": {
-    "kostudycenter": "^1.0.0",
+    "node-jsencrypt": "^1.0.0",
     "request": "^2.88.2"
   },
   "devDependencies": {}
