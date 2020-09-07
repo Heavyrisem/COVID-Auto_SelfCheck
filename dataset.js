@@ -30,7 +30,7 @@ class dataset {
                 if (value.indexOf(name) != -1) resolve({name: value[value.length-1], id: (index >= 10) ? toString(index) : "0"+index});
             });
     
-            if (!found) return resolve("STUDY_CENTER_NOT_FOUND");
+            if (!found) return resolve("REGION_NOT_FOUND");
 
         });
     }

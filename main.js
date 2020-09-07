@@ -35,9 +35,13 @@ async function schoolInfo(name, level, region) {
         request.get(info, (err, response, body) => {
             
             if (err) {resolve({err: err});return;}
-            if (typeof body == "string") {return resolve({err: "UNKNOWN_ERROR"})}
-            
-            let data = JSON.parse(body);
+
+            let data;
+            try {
+                data = JSON.parse(body);
+            } catch (err) {
+                return resolve({err: body});
+            }
     
             if (data.schulList.length == 0) {
                 return resolve({err: "SCHOOL_NOT_FOUND"});
@@ -59,7 +63,7 @@ async function usertoken(name, birth, region, schoolname, schoollevel) {
     return new Promise(async (resolve, reject) => {
 
         const schoolinfo = await schoolInfo(schoolname, schoollevel, region);
-        if(schoolinfo.err) {return resolve({err: school.err})}
+        if(schoolinfo.err) {return resolve({err: schoolinfo.err})}
         
         let info = {
             uri: "https://goehcs.eduro.go.kr/loginwithschool",
@@ -72,8 +76,8 @@ async function usertoken(name, birth, region, schoolname, schoollevel) {
 
         request.post(info, (err, response, body) => {
             if (err) return resolve({err: err});
-
-            if (body.isError) return resolve({err: body.message});
+            
+            if (body.isError) return resolve({"err": body.message});
             if (typeof body == "string") return resolve({err: "503_SERVER_ERROR"});
             
             return resolve(body.token);
@@ -86,7 +90,7 @@ module.exports = async function autocheck(name, birth, region, schoolname, schoo
     return new Promise(async (resolve, reject) => {
 
         const Token = await usertoken(name, birth, region, schoolname, schoollevel);
-        if (Token.err) {return resolve(Token.err);}
+        if (Token.err) {return resolve({err: Token.err});}
 
         const info = {
             uri: "https://goehcs.eduro.go.kr/registerServey",
@@ -116,7 +120,7 @@ module.exports = async function autocheck(name, birth, region, schoolname, schoo
 
         request.post(info, (err, response, body) => {
             if (err) return resolve({err: err});
-
+            
             if (body.message) return resolve({err: message});
 
             return resolve(body);
