@@ -23,11 +23,34 @@ class dataset {
                 ['경남', '경상남도', '경남교육청', '경상남도교육청'],
                 ['제주', '제주도', '제주특별자치시', '제주교육청', '제주도교육청', '제주특별자치시교육청', '제주특별자치도'],
             ];
+
+            const urlList = [
+                'sen',
+                'pen',
+                'dge',
+                'ice',
+                'gen',
+                'dje',
+                'use',
+                'sje',
+                '',
+                'goe',
+                'kwe',
+                'cbe',
+                'cne',
+                'jbe',
+                'jne',
+                'gbe',
+                'gne',
+                'jje',
+
+            ]
         
             let found = false;
             list.forEach((value, index) => {
                 index += 1;
-                if (value.indexOf(name) != -1) resolve({name: value[value.length-1], id: (index >= 10) ? toString(index) : "0"+index});
+                
+                if (value.indexOf(name) != -1) return resolve({name: value[value.length-1], id: (index >= 10) ? `${index}` : `0${index}`, urlcode: urlList[index-1]});
             });
     
             if (!found) return resolve("REGION_NOT_FOUND");

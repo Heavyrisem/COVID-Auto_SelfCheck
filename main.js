@@ -21,16 +21,16 @@ async function schoolInfo(name, level, region) {
                 return resolve({err: "SCHOOL_LEVEL_NOT_FOUND"}); break;
         }
 
-
         let info = {
-            uri: "https://cbehcs.eduro.go.kr/school",
+            uri: `https://${schoolcode.urlcode}hcs.eduro.go.kr/school`,
             qs: {
-                lctnScCode: schoolcode,
+                lctnScCode: schoolcode.id,
                 schulCrseScCode: schoollevel,
                 orgName : name,
                 currentPageNo: '1'
             }
         };
+        
         
         request.get(info, (err, response, body) => {
             
@@ -42,14 +42,16 @@ async function schoolInfo(name, level, region) {
             } catch (err) {
                 return resolve({err: body});
             }
-    
+            if (data.message) {return resolve({err: data.message})};
+
             if (data.schulList.length == 0) {
                 return resolve({err: "SCHOOL_NOT_FOUND"});
             } else {
                 const school = {
                     code: data.schulList[0].orgCode,
                     name: data.schulList[0].kraOrgNm,
-                    engname: data.schulList[0].engOrgNm
+                    engname: data.schulList[0].engOrgNm,
+                    urlcode: schoolcode.urlcode
                 };
 
                 return resolve(school);
@@ -66,7 +68,7 @@ async function userinfo(name, birth, region, schoolname, schoollevel) {
         if(schoolinfo.err) {return resolve({err: schoolinfo.err})}
         
         let info = {
-            uri: "https://goehcs.eduro.go.kr/loginwithschool",
+            uri: `https://${schoolinfo.urlcode}hcs.eduro.go.kr/loginwithschool`,
             json: {
                 birthday: crypto.encrypt(birth),
                 name: crypto.encrypt(name),
@@ -79,6 +81,7 @@ async function userinfo(name, birth, region, schoolname, schoollevel) {
             
             if (body.isError) return resolve({"err": body.message});
             if (typeof body == "string") return resolve({err: "503_SERVER_ERROR"});
+            body.urlcode = schoolinfo.urlcode;
             
             return resolve(body);
         });
@@ -94,7 +97,7 @@ module.exports = async function autocheck(name, birth, region, schoolname, schoo
         if (usrInfo.registerDtm) {return resolve({err: "ALREADY_DIAGNOSED"})}
 
         const info = {
-            uri: "https://goehcs.eduro.go.kr/registerServey",
+            uri: `https://${usrInfo.urlcode}hcs.eduro.go.kr/registerServey`,
             headers: {
                 Authorization: usrInfo.token
             },
