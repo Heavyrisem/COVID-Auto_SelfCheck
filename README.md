@@ -1,4 +1,7 @@
 # COVID Auto_Check
+[![NPM info](https://nodei.co/npm/covid_selfcheck.png)](https://www.npmjs.com/package/covid_selfcheck)
+
+
 코로나19 자가진단을 이상없음으로 처리해주는 라이브러리입니다.
 
 
