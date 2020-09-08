@@ -59,7 +59,7 @@ async function schoolInfo(name, level, region) {
 
 }
 
-async function usertoken(name, birth, region, schoolname, schoollevel) {
+async function userinfo(name, birth, region, schoolname, schoollevel) {
     return new Promise(async (resolve, reject) => {
 
         const schoolinfo = await schoolInfo(schoolname, schoollevel, region);
@@ -80,7 +80,7 @@ async function usertoken(name, birth, region, schoolname, schoollevel) {
             if (body.isError) return resolve({"err": body.message});
             if (typeof body == "string") return resolve({err: "503_SERVER_ERROR"});
             
-            return resolve(body.token);
+            return resolve(body);
         });
 
     });
@@ -89,13 +89,14 @@ async function usertoken(name, birth, region, schoolname, schoollevel) {
 module.exports = async function autocheck(name, birth, region, schoolname, schoollevel) {
     return new Promise(async (resolve, reject) => {
 
-        const Token = await usertoken(name, birth, region, schoolname, schoollevel);
-        if (Token.err) {return resolve({err: Token.err});}
+        const usrInfo = await userinfo(name, birth, region, schoolname, schoollevel);
+        if (usrInfo.err) {return resolve({err: usrInfo.err});}
+        if (usrInfo.registerDtm) {return resolve({err: "ALREADY_DIAGNOSED"})}
 
         const info = {
             uri: "https://goehcs.eduro.go.kr/registerServey",
             headers: {
-                Authorization: Token
+                Authorization: usrInfo.token
             },
             json: {
                 eviceUuid: "",
@@ -119,7 +120,7 @@ module.exports = async function autocheck(name, birth, region, schoolname, schoo
         }
 
         request.post(info, (err, response, body) => {
-            if (err) return resolve({err: err});
+            if (err) {return resolve({err: err})};
             
             if (body.message) return resolve({err: message});
 

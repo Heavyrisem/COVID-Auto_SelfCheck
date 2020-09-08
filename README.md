@@ -35,6 +35,9 @@ SelfTest('학생이름', '생년월일', '소속 시', '학교이름', '학교 �
 * { err: SCHOOL_NOT_FOUND }
 > 입력된 정보로 학교를 찾을수 없습니다.
 
+* { err: ALREADY_DIAGNOSED }
+> 이미 오늘 자가진단을 했습니다.
+
 * { err: 503_SERVER_ERROR }
 > API 서버가 응답하지 않습니다.
 
