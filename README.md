@@ -12,7 +12,15 @@
 ```
 const SelfTest = require('covid_selfcheck');
 
-SelfTest('학생이름', '생년월일', '소속 시', '학교이름', '학교 유형').then(result => {
+SelfTest('학생이름', '생년월일', '소속 시', '학교이름', '학교 유형(초중고)').then(result => {
+    console.log(result); // 결과값
+});
+```
+
+```
+const SelfTest = require('covid_selfcheck');
+
+SelfTest('학생이름', '생년월일', '학교 코드').then(result => {
     console.log(result); // 결과값
 });
 ```
@@ -31,6 +39,9 @@ SelfTest('학생이름', '생년월일', '소속 시', '학교이름', '학교 �
 
 * { err: REGION_NOT_FOUND }
 > 입력된 소속 시 이름이 없습니다.
+
+* { err: SCHOOL_CODE_NOT_FOUND }
+> 입력된 학교 코드가 발견되지 않았습니다.
 
 * { err: SCHOOL_LEVEL_NOT_FOUND }
 > 입력된 학급 이름이 없습니다.

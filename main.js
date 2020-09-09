@@ -5,21 +5,35 @@ const crypto =  new JSencrypt();
 
 crypto.setPublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA81dCnCKt0NVH7j5Oh2+SGgEU0aqi5u6sYXemouJWXOlZO3jqDsHYM1qfEjVvCOmeoMNFXYSXdNhflU7mjWP8jWUmkYIQ8o3FGqMzsMTNxr+bAp0cULWu9eYmycjJwWIxxB7vUwvpEUNicgW7v5nCwmF5HS33Hmn7yDzcfjfBs99K5xJEppHG0qc+q3YXxxPpwZNIRFn0Wtxt0Muh1U8avvWyw03uQ/wMBnzhwUC8T4G5NclLEWzOQExbQ4oDlZBv8BM/WxxuOyu0I8bDUDdutJOfREYRZBlazFHvRKNNQQD2qDfjRz484uFs7b5nykjaMB9k/EJAuHjJzGs9MMMWtQIDAQAB");
 
-async function schoolInfo(name, level, region) {
-
+async function schoolInfo(region, name, level) {
     return new Promise(async (resolve, reject) => {
+
+        if (region.match(/\d+/g) != null) {
+            region = `${region}`;
+            
+            let schoolurl = await dataset.schoolid(region.substring(0, 1).toUpperCase());
+            if (schoolurl.err) return resolve({err: schoolurl}); // SCHOOL_CODE_NOT_FOUND
+
+            
+            const school = {
+                code: region,
+                urlcode: schoolurl.urlcode
+            }
+            
+            return resolve(school);
+        }
+
+
         if (name.length < 2) {return resolve({err: "INPUT_VALUE_LENGTH"})}
+
+
         const schoolcode = await dataset.schoolid(region);
         const schoollevel = await dataset.schoollevel(level);
         
-        switch(schoolcode) {
-            case "REGION_NOT_FOUND":
-                return resolve({err: "REGION_NOT_FOUND"}); break;
-        }
-        switch(schoollevel) {
-            case "SCHOOL_LEVEL_NOT_FOUND":
-                return resolve({err: "SCHOOL_LEVEL_NOT_FOUND"}); break;
-        }
+        if (schoolcode.err) return resolve ({err: schoolcode.err});
+        if (schoollevel.err) return resolve ({err: schoollevel.err});
+
+
 
         let info = {
             uri: `https://${schoolcode.urlcode}hcs.eduro.go.kr/school`,
@@ -30,7 +44,6 @@ async function schoolInfo(name, level, region) {
                 currentPageNo: '1'
             }
         };
-        
         
         request.get(info, (err, response, body) => {
             
@@ -63,8 +76,8 @@ async function schoolInfo(name, level, region) {
 
 async function userinfo(name, birth, region, schoolname, schoollevel) {
     return new Promise(async (resolve, reject) => {
-
-        const schoolinfo = await schoolInfo(schoolname, schoollevel, region);
+        
+        const schoolinfo = await schoolInfo(region, schoolname, schoollevel);
         if(schoolinfo.err) {return resolve({err: schoolinfo.err})}
         
         let info = {
