@@ -36,12 +36,12 @@ async function schoolInfo(region, name, level) {
 
 
         let info = {
-            uri: `https://${schoolcode.urlcode}hcs.eduro.go.kr/school`,
+            uri: `https://${schoolcode.urlcode}hcs.eduro.go.kr/v2/searchSchool`,
             qs: {
                 lctnScCode: schoolcode.id,
                 schulCrseScCode: schoollevel,
                 orgName : name,
-                currentPageNo: '1'
+                loginType : 'school'
             }
         };
         
@@ -81,11 +81,13 @@ async function userinfo(name, birth, region, schoolname, schoollevel) {
         if(schoolinfo.err) {return resolve({err: schoolinfo.err})}
         
         let info = {
-            uri: `https://${schoolinfo.urlcode}hcs.eduro.go.kr/loginwithschool`,
+            uri: `https://${schoolinfo.urlcode}hcs.eduro.go.kr/v2/findUser`,
             json: {
                 birthday: crypto.encrypt(birth),
                 name: crypto.encrypt(name),
-                orgcode: schoolinfo.code
+                orgCode: schoolinfo.code,
+                stdntPNo: null,
+                loginType: 'school'
             }
         };
 
@@ -115,7 +117,9 @@ module.exports = async function autocheck(name, birth, region, schoolname, schoo
                 Authorization: usrInfo.token
             },
             json: {
-                eviceUuid: "",
+                deviceUuid: "",
+                upperToken: usrInfo.token,
+                upperUserNameEncpt: name,
                 rspns00: "Y",
                 rspns01: "1",
                 rspns02: "1",
