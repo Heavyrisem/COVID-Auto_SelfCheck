@@ -2,6 +2,14 @@
 [![NPM info](https://nodei.co/npm/covid_selfcheck.png)](https://www.npmjs.com/package/covid_selfcheck)
 
 
+
+이 라이브러리는 더 이상 업데이트 되지 않을 예정입니다.
+
+
+
+
+
+
 코로나19 자가진단을 이상없음으로 처리해주는 라이브러리입니다.
 
 

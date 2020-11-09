@@ -108,7 +108,6 @@ module.exports = async function autocheck(name, birth, region, schoolname, schoo
     return new Promise(async (resolve, reject) => {
 
         const usrInfo = await userinfo(name, birth, region, schoolname, schoollevel);
-        console.log(usrInfo);
         if (usrInfo.err) {return resolve({err: usrInfo.err});}
         if (usrInfo.registerDtm) {return resolve({err: "ALREADY_DIAGNOSED"})}
 
