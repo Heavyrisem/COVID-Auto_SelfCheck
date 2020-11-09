@@ -29,7 +29,7 @@ class dataset {
             let found = false;
             const names = Object.keys(regionlist);
             names.forEach(name => {
-                if (regionlist[name].find.indexOf(inputname) != -1) return resolve({name: name, urlcode: regionlist[name].data.urlcode, id: regionlist[name].data.id});
+                if (regionlist[name].find.indexOf(inputname) != -1) return resolve({name: name, urlcode: regionlist[name].data.urlcode, id: parseInt(regionlist[name].data.id)+1});
             });
             
             if (!found && inputname.match(/[A-Z]/g)) return resolve({err: "SCHOOL_CODE_NOT_FOUND"});

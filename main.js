@@ -48,7 +48,7 @@ async function schoolInfo(region, name, level) {
         request.get(info, (err, response, body) => {
             
             if (err) {resolve({err: err});return;}
-
+            
             let data;
             try {
                 data = JSON.parse(body);
@@ -93,7 +93,7 @@ async function userinfo(name, birth, region, schoolname, schoollevel) {
 
         request.post(info, (err, response, body) => {
             if (err) return resolve({err: err});
-            
+
             if (body.isError) return resolve({"err": body.message});
             if (typeof body == "string") return resolve({err: "503_SERVER_ERROR"});
             body.urlcode = schoolinfo.urlcode;
@@ -108,6 +108,7 @@ module.exports = async function autocheck(name, birth, region, schoolname, schoo
     return new Promise(async (resolve, reject) => {
 
         const usrInfo = await userinfo(name, birth, region, schoolname, schoollevel);
+        console.log(usrInfo);
         if (usrInfo.err) {return resolve({err: usrInfo.err});}
         if (usrInfo.registerDtm) {return resolve({err: "ALREADY_DIAGNOSED"})}
 
